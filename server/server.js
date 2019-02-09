@@ -22,15 +22,29 @@ app.use(express.static(publicPath))
 io.on('connection', (socket) => {
     console.log('Server: new user connected');
 
+    //Not a listener. Instead of listening to an event, we are creating the event
+    //newMessage is the event that we are creating, then we send any data back to the client along with the newMessage event
+    socket.emit('newMessage', {
+        from: 'TheNewMessage.event',
+        text: 'This is text to read',
+        created: 'time stamp'
+    });
+    //listener
+    socket.on('createEmail', (newEmail) => {
+        console.log("createEmail", newEmail);
+    })
+    //listener
+    socket.on('createMessage', function(createdMessage) {
+        console.log("created message", createdMessage);
+    })
+
+
     socket.on('disconnect', () => {
         console.log('User has been disconnected from the server');
+
     })
 })
 
-
-app.get('/', (req, res) => {
-    console.log('sda');
-})
 
 
 

@@ -11,18 +11,7 @@
 
 
         <script src= "/socket.io/socket.io.js"></script>
-        <script>
-            var socket = io();
-
-            socket.on('connect', () => {
-                console.log('Client: Connected to server')
-            })
-
-            //fires when connection drops
-            socket.on('disconnect', () => {
-                console.log('Client: Disconnected from server!');
-            })
-        </script>
+        <script src= "/js/index.js"></script>
         <!-- method available above socket library that opens up a websocket to keep connection open from the server -->
 
     </body>
