@@ -4,7 +4,7 @@ const port = process.env.PORT || 5000
 const socketIO = require('socket.io');
 const http = require('http');
 //we need to use http ourselves and configure it with express
-const {generateMessage} = require('./utils/message');
+const {generateMessage, generateLocationMessage} = require('./utils/message');
 
 var app = express();
 
@@ -40,16 +40,16 @@ io.on('connection', (socket) => {
         io.emit('newMessage', generateMessage(message.from, message.text))
 
         //Send an event back to the frontend
-        callback('This is from the server');
-
+        callback();
 
         // To broadcast, we need to specify the individual socket. This lets the socket.io library know which users shouldn't get the event
-        // Will send event to everyone except this socket
-        socket.broadcast.emit("newMessage", {
-            from: message.text,
-            text: message.text,
-            createdAt: new Date().getTime()//may want to use this to sort messages in a chatroom
-        })
+        // Will socket.broadcast.emit send event to everyone except this socket
+        // createdAt: new Date().getTime()//may want to use this to sort messages in a chatroom
+
+    })
+
+    socket.on('createLocationMessage', (coords) => {
+        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))
     })
 
 
