@@ -33,17 +33,21 @@ io.on('connection', (socket) => {
 
 
     //listener
-    socket.on('createMessage', function(createdMessage) {
-        console.log("created message", createdMessage);
+    socket.on('createMessage', (message, callback) => {
+        console.log("created message", message);
 
         // socket.emit emits to a single connection, io.emit emits to all connections
         io.emit('newMessage', generateMessage(message.from, message.text))
 
+        //Send an event back to the frontend
+        callback('This is from the server');
+
+
         // To broadcast, we need to specify the individual socket. This lets the socket.io library know which users shouldn't get the event
         // Will send event to everyone except this socket
-        socket.emit.broadcast("newMessage", {
-            from: createdMessage.text,
-            text: createdMessage.text,
+        socket.broadcast.emit("newMessage", {
+            from: message.text,
+            text: message.text,
             createdAt: new Date().getTime()//may want to use this to sort messages in a chatroom
         })
     })
