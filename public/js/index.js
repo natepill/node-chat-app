@@ -17,31 +17,49 @@ socket.on('disconnect', function(){
 //custom event handler
 //The data that was emitted from the server along with the event is provided as the first argument to your callback function
 socket.on('newMessage', function (message) {
+    //Will return the html markup inside of message-template
     var formattedTime = moment(message.createdAt).format('h:mm a');
+    var template = jQuery('#message-template').html();
 
-    //rather than selecting an element, we are going to create and element and then modify that element and add it into the markup, making it visable
-    var li = jQuery('<li></li>')
-    li.text(`${message.from} ${formattedTime}: ${message.text}`);
+    var html = Mustache.render(template, {
+        text: message.text,
+        from: message.from,
+        createdAt: formattedTime
+    });
 
-    //To render on the DOM
-    jQuery('#messages').append(li)
+    jQuery('#messages').append(html)
+
+    // //rather than selecting an element, we are going to create and element and then modify that element and add it into the markup, making it visable
+    // var li = jQuery('<li></li>')
+    // li.text(`${message.from} ${formattedTime}: ${message.text}`);
+    //
+    // //To render on the DOM
+    // jQuery('#messages').append(li)
 });
 
 
     socket.on('newLocationMessage', function (message) {
 
         var formattedTime = moment(message.createdAt).format('h:mm a')
-        var li = jQuery('<li></li>')
-        var a = jQuery('<a target="_blank">My current locaiton</a>');
+        var template = jQuery('#location-message-template').html()
 
-        li.text(`${message.from} ${formattedTime}: `);
-        // Set and fetch attributes inside jquery selected elements
+        var html = Mustache.render(template, {
+            url: message.url,
+            from: message.from,
+            createdAt: formattedTime
+        })
 
-        //Helps prevent html injection attacks
-        a.attr('href', message.url)
-        li.append(a);
+        // var li = jQuery('<li></li>')
+        // var a = jQuery('<a target="_blank">My current locaiton</a>');
 
-        jQuery('#messages').append(li)
+        // li.text(`${message.from} ${formattedTime}: `);
+        // // Set and fetch attributes inside jquery selected elements
+        //
+        // //Helps prevent html injection attacks
+        // a.attr('href', message.url)
+        // li.append(a);
+
+        jQuery('#messages').append(html)
 
     });
 
