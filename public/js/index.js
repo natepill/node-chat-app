@@ -17,11 +17,11 @@ socket.on('disconnect', function(){
 //custom event handler
 //The data that was emitted from the server along with the event is provided as the first argument to your callback function
 socket.on('newMessage', function (message) {
-    console.log('New message', message);
+    var formattedTime = moment(message.createdAt).format('h:mm a');
 
     //rather than selecting an element, we are going to create and element and then modify that element and add it into the markup, making it visable
     var li = jQuery('<li></li>')
-    li.text(`${message.from}: ${message.text}`);
+    li.text(`${message.from} ${formattedTime}: ${message.text}`);
 
     //To render on the DOM
     jQuery('#messages').append(li)
@@ -29,10 +29,12 @@ socket.on('newMessage', function (message) {
 
 
     socket.on('newLocationMessage', function (message) {
+
+        var formattedTime = moment(message.createdAt).format('h:mm a')
         var li = jQuery('<li></li>')
         var a = jQuery('<a target="_blank">My current locaiton</a>');
 
-        li.text(`${message.from}: `);
+        li.text(`${message.from} ${formattedTime}: `);
         // Set and fetch attributes inside jquery selected elements
 
         //Helps prevent html injection attacks
