@@ -5,6 +5,7 @@ const socketIO = require('socket.io');
 const http = require('http');
 //we need to use http ourselves and configure it with express
 const {generateMessage, generateLocationMessage} = require('./utils/message');
+const {isRealString} = require('./utils/validation')
 
 var app = express();
 
@@ -22,15 +23,32 @@ app.use(express.static(publicPath))
 io.on('connection', (socket) => {
     console.log('Server: new user connected');
 
-    //Welcome from admin
-    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
-
-    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User Joined'));
-
 
     //socket.emit is not a listener. Instead of listening to an event, we are creating the event
     //first argument is the event that we are creating, then we send any data back to the client along with the new event
 
+    //callback handles the event acknowlegdements
+    //Check for real strings in params, if not use callback
+    socket.on('join', (params, callback) => {
+        if (!isRealString(params.name) || !isRealString(params.room)) {
+          callback('Name and room name are required.');
+        }
+
+        socket.join(params.room);
+        //socket.leave(params.room)
+
+        // io.emit emits to every connected users --> io.to(params.room).emit: Sends event to everyone connected in a room
+        // socket.broadcast.emit emits to everyone on server except current user --> socket.broadcast.to(params.room).emit: send event to everyone in room except current user
+        // socket.emit emits an event to specifically one user
+
+        //Welcome from admin
+        socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
+
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.room} has joined`));
+
+        //Always calling the callback, just no arguments because we dont want to pass any errors back
+        callback()
+    });
 
     //listener
     socket.on('createMessage', (message, callback) => {

@@ -4,7 +4,22 @@ var socket = io();
 
 
 socket.on('connect', function (){
-    console.log('Client: Connected to server')
+    var params = jQuery.deparam(window.location.search);
+
+    //custom event join
+    //want to know when and who joined
+    socket.emit('join', params, function (err) {
+
+        // send user back to root
+        if (err) {
+            alert(err)
+            window.location.href = '/';
+        }
+        else{
+            console.log('No error');
+        }
+    });
+
 
 
 })
