@@ -43,8 +43,7 @@ io.on('connection', (socket) => {
 
         //Welcome from admin
         socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
-
-        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.room} has joined`));
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined.`));
 
         //Always calling the callback, just no arguments because we dont want to pass any errors back
         callback()
