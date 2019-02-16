@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
 
         // socket.emit emits to a single connection, io.emit emits to all connections
         io.emit('newMessage', generateMessage(message.from, message.text))
-
+ 
         //Send an event back to the frontend
         callback();
 
