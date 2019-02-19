@@ -29,6 +29,12 @@ socket.on('disconnect', function(){
     console.log('Client: Disconnected from server!');
 })
 
+
+socket.on('updateUserList', function (users) { //users = userArray
+    console.log('Users List: ', users);
+    
+})
+
 //custom event handler
 //The data that was emitted from the server along with the event is provided as the first argument to your callback function
 socket.on('newMessage', function (message) {

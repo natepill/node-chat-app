@@ -1,20 +1,33 @@
 const express = require('express')
 const path = require('path');
 const port = process.env.PORT || 5000
+const exphbs = require('express-handlebars');
 const socketIO = require('socket.io');
 const http = require('http');
 //we need to use http ourselves and configure it with express
 const {generateMessage, generateLocationMessage} = require('./utils/message');
 const {isRealString} = require('./utils/validation')
+const {Users} = require('./utils/users')
 
 var app = express();
 
 var server = http.createServer(app)
 var io = socketIO(server) //This is our websocket server, how we communicate between server and client
+var users = new Users ();
+
 
 
 const publicPath = path.join(__dirname, '../public/');
 app.use(express.static(publicPath))
+require('dotenv').config();
+require('./data/database');
+
+app.engine('hbs', exphbs({ defaultLayout: 'main', extname: 'hbs' }));
+app.set('view engine', 'hbs');
+app.use(require('cookie-parser')());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 
 //lets you register an event listener
@@ -31,10 +44,16 @@ io.on('connection', (socket) => {
     //Check for real strings in params, if not use callback
     socket.on('join', (params, callback) => {
         if (!isRealString(params.name) || !isRealString(params.room)) {
-          callback('Name and room name are required.');
+          return callback('Name and room name are required.');
         }
 
+        
+
         socket.join(params.room);
+        users.removeUser(socket.id);//remove them from any other rooms that they may be involved in
+
+        users.addUser(socket.id, params.name, params.room);
+
         //socket.leave(params.room)
 
         // io.emit emits to every connected users --> io.to(params.room).emit: Sends event to everyone connected in a room
@@ -55,7 +74,7 @@ io.on('connection', (socket) => {
 
         // socket.emit emits to a single connection, io.emit emits to all connections
         io.emit('newMessage', generateMessage(message.from, message.text))
- 
+
         //Send an event back to the frontend
         callback();
 
