@@ -43,14 +43,30 @@ io.on('connection', (socket) => {
     //callback handles the event acknowlegdements
     //Check for real strings in params, if not use callback
     socket.on('join', (params, callback) => {
-        if (!isRealString(params.name) || !isRealString(params.room)) {
-          return callback('Name and room name are required.');
-        }
+        //NOTE: Currently params is the object containing both the room name and user name
 
-        
+        // NOTE: Below TODO section is to account for users who already have previously established a chatroom connection
+        //TODO: Authenticate current user just as a user who exists, otherwise send an error
+        //TODO: We need another middleware auth to check if user has this chatroom by name and chatroom id in their Chatroom array
+                //If they do, then grant access to the room
+
+
+
+//NOTE: The below TODO section is the set up upon click the "Make A Bid" button, not the occurring auth for entering the room as already established requesters and providers
+
+        //TODO: Authenticate current user just as a user who exists, otherwise send an error,
+        //TODO: When user clicks button, grab username of current user and user who owns the card
+        //TODO: When user clicks button, it generates a channel name: (String), I dont think we need a unique
+        //         socket Id because we can just use the chatroom id when we create it later.
+        //TODO: Make POST req to create a Chatroom, (id,requster, provider, messages: [Message] (default empty), channel, productReqCard: productReqCardID)
+        //TODO: Update the User Model of both the req and prov (add newly created chatroom to chatroom array)
+
+
+        //TODO: If user is not either a requester or as a bidder, send back to index page
+                    // If they are either, then grant access to the chatroom, if not send error
+
 
         socket.join(params.room);
-        users.removeUser(socket.id);//remove them from any other rooms that they may be involved in
 
         users.addUser(socket.id, params.name, params.room);
 
@@ -70,11 +86,17 @@ io.on('connection', (socket) => {
 
     //listener
     socket.on('createMessage', (message, callback) => {
-        console.log("created message", message);
+        // TODO: Grab chatroom by socket id and channel name in a user's channels array
+        var user = users.getUser(socket.id);
 
-        // socket.emit emits to a single connection, io.emit emits to all connections
-        io.emit('newMessage', generateMessage(message.from, message.text))
+        if(user && isRealString(message.text)){ //String validation is important to keep to not allow empty strings to fill the chat
+            // socket.emit emits to a single connection, io.emit emits to all connections
+            //TODO: Need to add "from" attribute to message model
+            //By changing from io.emit --> io.to(user.room).emit
+            //TODO: Need to emit to the chatroom that matches the socket.id and channel name in user's array
+            io.to(user.room).emit('newMessage', generateMessage(user.name, message.text))
 
+        }
         //Send an event back to the frontend
         callback();
 
@@ -85,7 +107,12 @@ io.on('connection', (socket) => {
     })
 
     socket.on('createLocationMessage', (coords) => {
-        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))
+
+        var user = users.getUser(socket.id);
+
+        if (user && isRealString(message.text)){
+            io.emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude))
+        }
     })
 
 

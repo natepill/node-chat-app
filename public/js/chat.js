@@ -5,15 +5,20 @@ var socket = io();
 
 socket.on('connect', function (){
     var params = jQuery.deparam(window.location.search);
+    //Parsing query string to grab name and room name to create the socket room
+
 
     //custom event join
     //want to know when and who joined
+
+    //This is the client side entry to the socket room when the form from index is submitted
+    //TODO: This is where we should authenticate the user who clicked
     socket.emit('join', params, function (err) {
 
         // send user back to root
         if (err) {
             alert(err)
-            window.location.href = '/';
+            window.location.href = '/'; // if error, go back to index page
         }
         else{
             console.log('No error');
@@ -32,7 +37,7 @@ socket.on('disconnect', function(){
 
 socket.on('updateUserList', function (users) { //users = userArray
     console.log('Users List: ', users);
-    
+
 })
 
 //custom event handler
