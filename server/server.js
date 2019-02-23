@@ -62,8 +62,8 @@ io.on('connection', (socket) => {
         //TODO: Update the User Model of both the req and prov (add newly created chatroom to chatroom array)
 
 
-        //TODO: If user is not either a requester or as a bidder, send back to index page
-                    // If they are either, then grant access to the chatroom, if not send error
+        //TODO: Middleware: Pass in a user object and if user is not either the requester or as a bidder, send back to index page
+                    // If they are either, then grant access to the chatroom
 
 
         socket.join(params.room);
