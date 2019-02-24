@@ -30,6 +30,32 @@ app.use(express.urlencoded({ extended: true }));
 
 
 
+
+app.get('/', (req, res) => {
+    res.render('../public/views/requestCard')
+})
+
+app.post('/chatrooms', (req, res) => {
+
+    //TODO: Auth if user who clicked button is actually in the system
+
+    //TODO: Send message to confirm if they want to establish a chatroom connection.
+
+    //TODO: If they are then create the chatroom and do role assignment.
+
+        Chatroom.create(req.body).then((chatroom) => {
+            console.log(chatroom)
+            res.redirect('/manage-offers/') // Redirect to chatroom
+
+
+        }).catch((err) => {
+            console.log(err.message)
+        })
+
+
+})
+
+
 //lets you register an event listener
 // built in event listener like connection lets you listen when a client connects to the server
 // 'socket' which is passed into the callback represents the individual socket as opposed to all the users connected to the server
@@ -52,7 +78,7 @@ io.on('connection', (socket) => {
 
 
 
-//NOTE: The below TODO section is the set up upon click the "Make A Bid" button, not the occurring auth for entering the room as already established requesters and providers
+//NOTE: The below TODO section is the set up upon click the "Make A Bid" button, not the reoccurring auth for entering the room as already established requesters and providers
 
         //TODO: Authenticate current user just as a user who exists, otherwise send an error,
         //TODO: When user clicks button, grab username of current user and user who owns the card
@@ -82,6 +108,7 @@ io.on('connection', (socket) => {
 
         //Always calling the callback, just no arguments because we dont want to pass any errors back
         callback()
+
     });
 
     //listener
