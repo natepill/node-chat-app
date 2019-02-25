@@ -37,12 +37,8 @@ app.get('/', (req, res) => {
 
 app.post('/chatrooms', (req, res) => {
 
-    //TODO: Auth if user who clicked button is actually in the system
-
     //TODO: Send message to confirm if they want to establish a chatroom connection.
-
-    //TODO: If they are then create the chatroom and do role assignment.
-
+    
         Chatroom.create(req.body).then((chatroom) => {
             console.log(chatroom)
             res.redirect('/manage-offers/') // Redirect to chatroom
@@ -69,6 +65,8 @@ io.on('connection', (socket) => {
     //callback handles the event acknowlegdements
     //Check for real strings in params, if not use callback
     socket.on('join', (params, callback) => {
+
+
         //NOTE: Currently params is the object containing both the room name and user name
 
         // NOTE: Below TODO section is to account for users who already have previously established a chatroom connection
@@ -81,6 +79,7 @@ io.on('connection', (socket) => {
 //NOTE: The below TODO section is the set up upon click the "Make A Bid" button, not the reoccurring auth for entering the room as already established requesters and providers
 
         //TODO: Authenticate current user just as a user who exists, otherwise send an error,
+
         //TODO: When user clicks button, grab username of current user and user who owns the card
         //TODO: When user clicks button, it generates a channel name: (String), I dont think we need a unique
         //         socket Id because we can just use the chatroom id when we create it later.
